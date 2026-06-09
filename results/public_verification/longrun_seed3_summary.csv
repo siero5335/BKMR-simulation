@@ -1,0 +1,3 @@
+"scenario","model","iter","warmup","n_seed_sets","n_completed","crash_rate","hard_failure_rate","tuning_issue_rate","median_max_rhat","worst_max_rhat","median_min_ess","worst_min_ess"
+"public_bkmr_longrun_seed3_varsel_false","exact_public",50000,25000,3,3,0,1,1,1.61119145126029,1.73351721606901,57.7689065217946,47.0096589383256
+"public_bkmr_longrun_seed3_varsel_false","exact_public",100000,50000,3,3,0,1,1,1.16038573495703,1.17959646333941,77.3616934763327,67.3913612956091

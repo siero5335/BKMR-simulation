@@ -1,0 +1,2 @@
+"scenario","model","dataset_seed","seed_sweep_seed","n_seed_sets","n_completed","crash_rate","hard_failure_rate","tuning_issue_rate","median_max_rhat","worst_max_rhat","median_min_ess","worst_min_ess"
+"public_bkmr_seed10_varsel_true","exact_public",303,20260420,10,10,0,1,1,1.66789818441316,3.04714198405153,53.0401398906456,30.1817379095914

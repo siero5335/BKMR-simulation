@@ -1,0 +1,7 @@
+Step 2: n = 80 numerical crash check
+dataset_seed: 303
+chain_seed: 142709412
+iter: 10000
+warmup: 5000
+status: error
+message: missing value where TRUE/FALSE needed

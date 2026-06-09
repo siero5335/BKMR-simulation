@@ -1,0 +1,5 @@
+"scenario","model","n","iter","warmup","elapsed_sec","status","error_message","max_rhat","min_ess","converged_hard","tuning_issue"
+"public_bkmr_n_sweep_varsel_false","exact_public",40,10000,5000,24.067,"ok",NA,2.66177834047669,54.4673288393755,FALSE,TRUE
+"public_bkmr_n_sweep_varsel_false","exact_public",80,10000,5000,0.0640000000000001,"error","missing value where TRUE/FALSE needed",NA,NA,FALSE,NA
+"public_bkmr_n_sweep_varsel_false","exact_public",160,10000,5000,0.0710000000000015,"error","missing value where TRUE/FALSE needed",NA,NA,FALSE,NA
+"public_bkmr_n_sweep_varsel_false","exact_public",320,10000,5000,0.0739999999999981,"error","missing value where TRUE/FALSE needed",NA,NA,FALSE,NA

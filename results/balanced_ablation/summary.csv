@@ -1,0 +1,2 @@
+"scenario","n","varsel","dataset_sweep_seed","K","n_completed","crash_rate","hard_failure_rate","tuning_issue_rate","mean_label_sum","min_label_sum","max_label_sum","median_max_rhat","worst_max_rhat","median_min_ess","worst_min_ess","n_hard_pass"
+"balanced_bkmr_n40_varsel_false",40,FALSE,20260522,50,48,0.04,0.729166666666667,0.0833333333333333,28.84,22,34,1.15984414141843,11.1369791316863,158.196659828073,46.7880369177862,13

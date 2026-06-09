@@ -1,0 +1,3 @@
+"scenario","model","iter","warmup","elapsed_sec","status","error_message","max_rhat","min_ess","converged_hard","tuning_issue"
+"public_bkmr_longrun_varsel_false","exact_public",50000,25000,123.197,"ok",NA,1.51250995644035,52.8500628720482,FALSE,TRUE
+"public_bkmr_longrun_varsel_false","exact_public",100000,50000,253.566,"ok",NA,1.28295804749796,89.1956222922644,FALSE,TRUE

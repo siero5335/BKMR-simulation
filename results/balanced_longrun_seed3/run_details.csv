@@ -1,0 +1,13 @@
+"scenario","dataset_seed","n","varsel","hfun","beta_true","iter","warmup","label_sum","status","error_message","elapsed_sec","max_rhat","min_ess","converged_hard","tuning_issue"
+"balanced_bkmr_n40_varsel_false_longrun",424124194,40,FALSE,2,0.5,50000,25000,33,"error","missing value where TRUE/FALSE needed",NA,NA,NA,FALSE,NA
+"balanced_bkmr_n40_varsel_false_longrun",424124194,40,FALSE,2,0.5,100000,50000,33,"error","missing value where TRUE/FALSE needed",NA,NA,NA,FALSE,NA
+"balanced_bkmr_n40_varsel_false_longrun",1565229544,40,FALSE,2,0.5,50000,25000,34,"ok",NA,1275.664,1.00473494111271,1036.98680726255,TRUE,FALSE
+"balanced_bkmr_n40_varsel_false_longrun",1565229544,40,FALSE,2,0.5,100000,50000,34,"ok",NA,2711.957,3.3188985078462,305.833398603576,FALSE,FALSE
+"balanced_bkmr_n40_varsel_false_longrun",1849628630,40,FALSE,2,0.5,50000,25000,27,"ok",NA,653.437,1.00840512783138,879.045190924967,TRUE,FALSE
+"balanced_bkmr_n40_varsel_false_longrun",1849628630,40,FALSE,2,0.5,100000,50000,27,"ok",NA,2647.995,1.02973330092067,688.967850052162,TRUE,FALSE
+"balanced_bkmr_n80_varsel_false_longrun",424124194,80,FALSE,2,0.5,50000,25000,56,"ok",NA,994.642,1.03703377450622,578.016466817129,TRUE,TRUE
+"balanced_bkmr_n80_varsel_false_longrun",424124194,80,FALSE,2,0.5,100000,50000,56,"ok",NA,4040.416,1.01305288934925,557.996275285354,TRUE,TRUE
+"balanced_bkmr_n80_varsel_false_longrun",1565229544,80,FALSE,2,0.5,50000,25000,56,"ok",NA,1085.712,1.06335807464531,505.738818557117,FALSE,TRUE
+"balanced_bkmr_n80_varsel_false_longrun",1565229544,80,FALSE,2,0.5,100000,50000,56,"ok",NA,4427.442,1.02132978849172,593.092314207719,TRUE,TRUE
+"balanced_bkmr_n80_varsel_false_longrun",1849628630,80,FALSE,2,0.5,50000,25000,57,"ok",NA,1152.451,1.03596048621885,367.051977955979,TRUE,TRUE
+"balanced_bkmr_n80_varsel_false_longrun",1849628630,80,FALSE,2,0.5,100000,50000,57,"ok",NA,3766.989,1.07074739994829,374.831334210641,FALSE,TRUE
