@@ -1,3 +1,0 @@
-"dataset_seed","n","hfun","beta_true","iter","warmup","label_sum","status","error_message","elapsed_sec","max_rhat","min_ess","converged_hard","tuning_issue"
-303,40,2,0.5,50000,25000,30,"ok",NA,1312.813,1.13320804986929,292.13924040665,FALSE,TRUE
-303,40,2,0.5,100000,50000,30,"ok",NA,2904.116,1.25942697355486,117.437450059667,FALSE,TRUE

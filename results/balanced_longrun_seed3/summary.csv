@@ -1,5 +1,0 @@
-"scenario","n","varsel","hfun","beta_true","iter","warmup","K","n_completed","crash_rate","hard_failure_rate","tuning_issue_rate","median_label_sum","median_max_rhat","worst_max_rhat","median_min_ess","worst_min_ess","n_hard_pass"
-"balanced_bkmr_n40_varsel_false_longrun",40,FALSE,2,0.5,50000,25000,3,2,0.333333333333333,0,0,33,1.00657003447204,1.00840512783138,958.015999093758,879.045190924967,2
-"balanced_bkmr_n80_varsel_false_longrun",80,FALSE,2,0.5,50000,25000,3,3,0,0.333333333333333,1,56,1.03703377450622,1.06335807464531,505.738818557117,367.051977955979,2
-"balanced_bkmr_n40_varsel_false_longrun",40,FALSE,2,0.5,100000,50000,3,2,0.333333333333333,0.5,0,33,2.17431590438343,3.3188985078462,497.400624327869,305.833398603576,1
-"balanced_bkmr_n80_varsel_false_longrun",80,FALSE,2,0.5,100000,50000,3,3,0,0.333333333333333,1,56,1.02132978849172,1.07074739994829,557.996275285354,374.831334210641,2

@@ -1,0 +1,3 @@
+"scenario","dataset_sweep_seed","K","n_completed","crash_rate","hard_failure_rate","tuning_issue_rate","mean_label_sum","min_label_sum","max_label_sum","median_max_rhat","worst_max_rhat","median_min_ess","worst_min_ess","median_min_bulk_ess","worst_min_bulk_ess","median_min_tail_ess","worst_min_tail_ess","n_hard_pass"
+"public_bkmr_dataset_sweep_n40_varsel_true",20260514,50,50,0,1,1,35.04,29,39,1.75938569942188,2.60823651370034,6.01038587895403,4.79624966802913,6.01038587895403,4.79624966802913,15.1392963584213,11.3079708169762,0
+"public_bkmr_dataset_sweep_n80_varsel_false",20260514,50,50,0,1,0.08,69.12,62,75,1.48315302095242,2.23699948677995,7.62211709428234,5.04768440524964,7.62211709428234,5.04768440524964,22.4703710807739,11.0573884167793,0
