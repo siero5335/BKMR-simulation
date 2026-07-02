@@ -1,2 +1,0 @@
-"started_at","finished_at","elapsed_sec","workers","n_tasks","n_ok","n_error","diagnostic_package","diagnostic_package_version","rhat_definition","rhat_threshold","ess_threshold","starting_values"
-"2026-06-16 19:29:01 JST","2026-06-16 23:56:10 JST",16029.5561249256,8,431,431,0,"posterior","1.7.0","maximum of rank-normalized split R-hat and rank-normalized folded-split R-hat",1.01,400,"explicit binomial starts: h.hat=1, beta=0, sigsq.eps=1, r=1, lambda=10, delta=1, ystar=+/-0.5"

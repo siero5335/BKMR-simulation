@@ -11,7 +11,8 @@ if (is.na(workers) || workers < 1L) {
 }
 
 task_row <- function(bundle, scenario, dataset_seed, n, hfun, beta_true, iter, warmup,
-                     varsel, chain_seeds, row_id = NA_character_, seed_id = NA_integer_) {
+                     varsel, chain_seeds, row_id = NA_character_, seed_id = NA_integer_,
+                     initial_value_seed = fixed_initial_value_seed()) {
   data.frame(
     bundle = bundle,
     scenario = scenario,
@@ -23,6 +24,7 @@ task_row <- function(bundle, scenario, dataset_seed, n, hfun, beta_true, iter, w
     warmup = warmup,
     varsel = varsel,
     chain_seeds = paste(chain_seeds, collapse = ";"),
+    initial_value_seed = initial_value_seed,
     row_id = row_id,
     seed_id = seed_id,
     stringsAsFactors = FALSE
@@ -30,6 +32,7 @@ task_row <- function(bundle, scenario, dataset_seed, n, hfun, beta_true, iter, w
 }
 
 fixed <- fixed_chain_seeds()
+initial_value_seed <- fixed_initial_value_seed()
 tasks <- list()
 
 balanced_seeds <- dataset_seeds(20260522L, 50L)
@@ -164,6 +167,7 @@ message("Running ", nrow(task_table), " tasks with ", workers, " workers.")
 
 run_task <- function(task) {
   chain_seeds <- as.integer(strsplit(task$chain_seeds, ";", fixed = TRUE)[[1]])
+  initial_value_seed <- as.integer(task$initial_value_seed)
   parameter_dir <- file.path(results_dir, task$bundle, "parameter_diagnostics")
   row <- fit_task(
     scenario = task$scenario,
@@ -176,7 +180,8 @@ run_task <- function(task) {
     varsel = task$varsel,
     chain_seeds = chain_seeds,
     parameter_dir = parameter_dir,
-    parameter_id = sprintf("task_%03d", task$task_index)
+    parameter_id = sprintf("task_%03d", task$task_index),
+    initial_value_seed = initial_value_seed
   )
   row$bundle <- task$bundle
   row$row_id <- task$row_id
@@ -190,10 +195,12 @@ rows <- parallel::mclapply(task_list, run_task, mc.cores = workers)
 all_results <- do.call(rbind, rows)
 write_csv(all_results, file.path(results_dir, "all_task_results.csv"))
 
-errors <- all_results[all_results$status != "ok", c(
+error_cols <- intersect(c(
   "bundle", "scenario", "dataset_seed", "n", "varsel", "iter", "warmup",
-  "label_sum", "error_message"
-)]
+  "label_sum", "chain_seeds", "initial_value_seed", "initial_value_task_seed",
+  "error_message"
+), names(all_results))
+errors <- all_results[all_results$status != "ok", error_cols]
 write_csv(errors, file.path(results_dir, "pure_bkmr_error_tasks.csv"))
 
 write_group <- function(bundle, file, data) {
@@ -208,7 +215,9 @@ write_group("balanced_main", "summary.csv",
 write_group("balanced_main", "meta.csv",
             data.frame(dataset_sweep_seed = 20260522L, K = 50L,
                        iter = 10000L, warmup = 5000L,
-                       chain_seeds = paste(fixed, collapse = ";")))
+                       chain_seeds = paste(fixed, collapse = ";"),
+                       initial_value_seed = initial_value_seed,
+                       starting_values = bkmr_starting_values_description()))
 
 balanced_ablation <- all_results[all_results$bundle == "balanced_ablation", , drop = FALSE]
 balanced_ablation$dataset_sweep_seed <- 20260522L
@@ -218,7 +227,9 @@ write_group("balanced_ablation", "summary.csv",
 write_group("balanced_ablation", "meta.csv",
             data.frame(dataset_sweep_seed = 20260522L, K = 50L,
                        iter = 10000L, warmup = 5000L,
-                       chain_seeds = paste(fixed, collapse = ";")))
+                       chain_seeds = paste(fixed, collapse = ";"),
+                       initial_value_seed = initial_value_seed,
+                       starting_values = bkmr_starting_values_description()))
 
 balanced_longrun <- all_results[all_results$bundle == "balanced_longrun_seed3", , drop = FALSE]
 write_group("balanced_longrun_seed3", "run_details.csv", balanced_longrun)
@@ -226,13 +237,17 @@ write_group("balanced_longrun_seed3", "summary.csv",
             summarize_sweep(balanced_longrun, c("scenario", "n", "varsel", "hfun", "beta_true", "iter", "warmup")))
 write_group("balanced_longrun_seed3", "meta.csv",
             data.frame(dataset_seed_source = 20260522L, K = 3L,
-                       chain_seeds = paste(fixed, collapse = ";")))
+                       chain_seeds = paste(fixed, collapse = ";"),
+                       initial_value_seed = initial_value_seed,
+                       starting_values = bkmr_starting_values_description()))
 
 balanced_single <- all_results[all_results$bundle == "balanced_n40_longrun_single", , drop = FALSE]
 write_group("balanced_n40_longrun_single", "summary.csv", balanced_single)
 write_group("balanced_n40_longrun_single", "meta.csv",
             data.frame(dataset_seed = 303L, n = 40L,
-                       chain_seeds = paste(fixed, collapse = ";")))
+                       chain_seeds = paste(fixed, collapse = ";"),
+                       initial_value_seed = initial_value_seed,
+                       starting_values = bkmr_starting_values_description()))
 
 default_support <- all_results[all_results$bundle == "default_support", , drop = FALSE]
 default_support$dataset_sweep_seed <- 20260522L
@@ -242,7 +257,9 @@ write_group("default_support", "summary.csv",
 write_group("default_support", "meta.csv",
             data.frame(dataset_sweep_seed = 20260522L, K = 20L,
                        iter = 10000L, warmup = 5000L,
-                       chain_seeds = paste(fixed, collapse = ";")))
+                       chain_seeds = paste(fixed, collapse = ";"),
+                       initial_value_seed = initial_value_seed,
+                       starting_values = bkmr_starting_values_description()))
 
 public_main <- all_results[all_results$bundle == "public_main", , drop = FALSE]
 public_main$dataset_seed <- 303L
@@ -338,7 +355,8 @@ write_csv(data.frame(
   rhat_definition = "maximum of rank-normalized split R-hat and rank-normalized folded-split R-hat",
   rhat_threshold = 1.01,
   ess_threshold = 400,
-  starting_values = "explicit binomial starts: h.hat=1, beta=0, sigsq.eps=1, r=1, lambda=10, delta=1, ystar=+/-0.5",
+  initial_value_seed = initial_value_seed,
+  starting_values = bkmr_starting_values_description(),
   stringsAsFactors = FALSE
 ), file.path(results_dir, "overall_runtime.csv"))
 

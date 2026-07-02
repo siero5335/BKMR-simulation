@@ -1,0 +1,2 @@
+"bundle","scenario","dataset_seed","n","varsel","iter","warmup","label_sum","chain_seeds","initial_value_seed","initial_value_task_seed","error_message"
+"balanced_main","balanced_bkmr_n320_varsel_false",1825111885,320,FALSE,10000,5000,220,"142709412;1107285817;1907135512;672667230",20260621,1740350714,"H must be positive definite"

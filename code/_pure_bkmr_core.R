@@ -93,16 +93,76 @@ constant_draws <- function(draws) {
   length(vals) > 0L && isTRUE(all(vals == vals[1]))
 }
 
-bkmr_binomial_starting_values <- function(y, Z, X) {
-  list(
-    h.hat = rep(1, length(y)),
-    beta = rep(0, ncol(X)),
-    sigsq.eps = 1,
-    r = rep(1, ncol(Z)),
-    lambda = 10,
-    delta = rep(1, ncol(Z)),
-    ystar = ifelse(y == 1, 0.5, -0.5)
+bkmr_starting_values_description <- function() {
+  paste(
+    "chain-specific randomized binomial starts from fixed initial-value seed;",
+    "h.hat ~ Uniform(-2, 2) and beta ~ Uniform(-1, 1);",
+    "positive r and |ystar| generated as exp(Uniform(-1, 1));",
+    "lambda generated as log-Uniform(1, 20);",
+    "ystar sign constrained by y; sigsq.eps fixed at 1;",
+    "delta ~ Bernoulli(0.5) for varsel=TRUE with r=0 when delta=0"
   )
+}
+
+fixed_initial_value_seed <- function() {
+  20260621L
+}
+
+derive_initial_value_seed <- function(base_seed = fixed_initial_value_seed(), ...) {
+  modulus <- .Machine$integer.max
+  key <- paste(c(as.character(base_seed), as.character(unlist(list(...), use.names = FALSE))),
+               collapse = "|")
+  seed <- as.numeric(base_seed %% modulus)
+  for (code in utf8ToInt(key)) {
+    seed <- (seed * 131 + code) %% modulus
+  }
+  seed <- as.integer(seed)
+  if (is.na(seed) || seed <= 0L) {
+    seed <- 1L
+  }
+  seed
+}
+
+with_preserved_seed <- function(seed, expr) {
+  old_seed_exists <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  if (old_seed_exists) {
+    old_seed <- get(".Random.seed", envir = .GlobalEnv)
+  }
+  on.exit({
+    if (old_seed_exists) {
+      assign(".Random.seed", old_seed, envir = .GlobalEnv)
+    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    }
+  }, add = TRUE)
+  set.seed(seed)
+  force(expr)
+}
+
+bkmr_binomial_starting_values <- function(y, Z, X, varsel) {
+  delta <- if (isTRUE(varsel)) stats::rbinom(ncol(Z), size = 1L, prob = 0.5) else rep(1, ncol(Z))
+  r <- exp(stats::runif(ncol(Z), min = -1, max = 1))
+  if (isTRUE(varsel)) {
+    r[delta == 0L] <- 0
+  }
+  list(
+    h.hat = stats::runif(length(y), min = -2, max = 2),
+    beta = stats::runif(ncol(X), min = -1, max = 1),
+    sigsq.eps = 1,
+    r = r,
+    lambda = exp(stats::runif(1L, min = log(1), max = log(20))),
+    delta = delta,
+    ystar = ifelse(y == 1, 1, -1) * exp(stats::runif(length(y), min = -1, max = 1))
+  )
+}
+
+make_bkmr_binomial_starting_values <- function(y, Z, X, n_chains, varsel,
+                                               initial_value_seed = fixed_initial_value_seed()) {
+  with_preserved_seed(initial_value_seed, {
+    lapply(seq_len(n_chains), function(...) {
+      bkmr_binomial_starting_values(y, Z, X, varsel = varsel)
+    })
+  })
 }
 
 posterior_stat <- function(draws, fun) {
@@ -223,8 +283,17 @@ diagnose_chains <- function(chains, warmup, rhat_threshold = 1.01,
   list(table = table, acceptance = acc, warmup = warmup)
 }
 
-fit_chains <- function(y, Z, X, iter, warmup, varsel, chain_seeds) {
+fit_chains <- function(y, Z, X, iter, warmup, varsel, chain_seeds,
+                       initial_value_seed = fixed_initial_value_seed()) {
   chains <- vector("list", length(chain_seeds))
+  starting_values <- make_bkmr_binomial_starting_values(
+    y = y,
+    Z = Z,
+    X = X,
+    n_chains = length(chain_seeds),
+    varsel = varsel,
+    initial_value_seed = initial_value_seed
+  )
   elapsed <- system.time({
     for (i in seq_along(chain_seeds)) {
       set.seed(chain_seeds[i])
@@ -238,13 +307,20 @@ fit_chains <- function(y, Z, X, iter, warmup, varsel, chain_seeds) {
           varsel = varsel,
           verbose = FALSE,
           est.h = FALSE,
-          starting.values = bkmr_binomial_starting_values(y, Z, X)
+          starting.values = starting_values[[i]]
         ))
       }))
     }
     diagnostics <- diagnose_chains(chains, warmup = warmup)
   })[["elapsed"]]
-  list(chains = chains, diagnostics = diagnostics, warmup = warmup, elapsed_sec = elapsed)
+  list(
+    chains = chains,
+    diagnostics = diagnostics,
+    warmup = warmup,
+    elapsed_sec = elapsed,
+    initial_value_seed = initial_value_seed,
+    starting_values = starting_values
+  )
 }
 
 combine_chains <- function(chains, warmup) {
@@ -411,8 +487,21 @@ error_fit_row <- function(scenario, elapsed, error_message, model = "exact_publi
 
 fit_task <- function(scenario, dataset_seed, n, hfun, beta_true, iter, warmup,
                      varsel, chain_seeds, keep_parameter_table = TRUE,
-                     parameter_dir = NULL, parameter_id = NULL) {
+                     parameter_dir = NULL, parameter_id = NULL,
+                     initial_value_seed = fixed_initial_value_seed()) {
   dat <- make_bkmr_dataset(dataset_seed, n = n, hfun = hfun, beta_true = beta_true)
+  initial_value_task_seed <- derive_initial_value_seed(
+    initial_value_seed,
+    scenario,
+    dataset_seed,
+    n,
+    hfun,
+    beta_true,
+    iter,
+    warmup,
+    varsel,
+    paste(chain_seeds, collapse = ";")
+  )
   fit_obj <- NULL
   elapsed <- system.time({
     fit_obj <- tryCatch(
@@ -423,7 +512,8 @@ fit_task <- function(scenario, dataset_seed, n, hfun, beta_true, iter, warmup,
         iter = iter,
         warmup = warmup,
         varsel = varsel,
-        chain_seeds = chain_seeds
+        chain_seeds = chain_seeds,
+        initial_value_seed = initial_value_task_seed
       ),
       error = identity
     )
@@ -461,6 +551,8 @@ fit_task <- function(scenario, dataset_seed, n, hfun, beta_true, iter, warmup,
   row$varsel <- varsel
   row$label_sum <- dat$label_sum
   row$chain_seeds <- paste(chain_seeds, collapse = ";")
+  row$initial_value_seed <- initial_value_seed
+  row$initial_value_task_seed <- initial_value_task_seed
   row
 }
 

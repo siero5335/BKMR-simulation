@@ -1,3 +1,0 @@
-"scenario","iter","warmup","K","n_completed","crash_rate","hard_failure_rate","tuning_issue_rate","mean_label_sum","min_label_sum","max_label_sum","median_max_rhat","worst_max_rhat","median_min_ess","worst_min_ess","median_min_bulk_ess","worst_min_bulk_ess","median_min_tail_ess","worst_min_tail_ess","n_hard_pass"
-"public_bkmr_longrun_seed3_varsel_false",50000,25000,3,3,0,1,0,38,38,38,1.06528856142252,1.06982125673811,63.8994806572314,61.3791853915198,63.8994806572314,61.3791853915198,119.788566882085,80.6131628954925,0
-"public_bkmr_longrun_seed3_varsel_false",100000,50000,3,3,0,1,0,38,38,38,1.05217325114093,1.08938759919623,56.578049057062,36.1088567808342,80.0423188237065,36.1088567808342,56.578049057062,38.7973277246041,0

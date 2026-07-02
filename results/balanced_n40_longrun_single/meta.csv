@@ -1,0 +1,2 @@
+"dataset_seed","n","chain_seeds","initial_value_seed","starting_values"
+303,40,"142709412;1107285817;1907135512;672667230",20260621,"chain-specific randomized binomial starts from fixed initial-value seed; h.hat ~ Uniform(-2, 2) and beta ~ Uniform(-1, 1); positive r and |ystar| generated as exp(Uniform(-1, 1)); lambda generated as log-Uniform(1, 20); ystar sign constrained by y; sigsq.eps fixed at 1; delta ~ Bernoulli(0.5) for varsel=TRUE with r=0 when delta=0"

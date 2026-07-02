@@ -22,36 +22,60 @@ old_parameter_file <- function(row) {
   )
 }
 
-new_parameter_file <- function(row, old_file) {
-  paste(sprintf("task_%03d", row$task_index), old_file, sep = "__")
+task_parameter_file <- function(row) {
+  paste(sprintf("task_%03d", row$task_index), old_parameter_file(row), sep = "__")
+}
+
+source_parameter_file <- function(row) {
+  task_file <- task_parameter_file(row)
+  task_path <- file.path(source_dir, row$bundle, "parameter_diagnostics", task_file)
+  if (file.exists(task_path)) {
+    return(task_file)
+  }
+  old_parameter_file(row)
+}
+
+new_parameter_file <- function(row, source_file) {
+  if (grepl("^task_[0-9]{3}__", source_file)) {
+    return(source_file)
+  }
+  paste(sprintf("task_%03d", row$task_index), source_file, sep = "__")
 }
 
 all_results <- read.csv(file.path(results_dir, "all_task_results.csv"), stringsAsFactors = FALSE)
 ok <- all_results[all_results$status == "ok", , drop = FALSE]
-ok$old_parameter_file <- vapply(seq_len(nrow(ok)), function(i) old_parameter_file(ok[i, ]), character(1))
-ok$old_parameter_path <- file.path(source_dir, ok$bundle, "parameter_diagnostics", ok$old_parameter_file)
-dup_key <- paste(ok$bundle, ok$old_parameter_file, sep = "/")
+ok$source_parameter_file <- vapply(seq_len(nrow(ok)), function(i) source_parameter_file(ok[i, ]), character(1))
+ok$source_parameter_path <- file.path(source_dir, ok$bundle, "parameter_diagnostics", ok$source_parameter_file)
+dup_key <- paste(ok$bundle, ok$source_parameter_file, sep = "/")
 ok$duplicate_parameter_file <- ave(rep(TRUE, nrow(ok)), dup_key, FUN = length) > 1L
 
 nondup <- ok[!ok$duplicate_parameter_file, , drop = FALSE]
 for (i in seq_len(nrow(nondup))) {
-  dest <- file.path(out_dir, nondup$bundle[i], new_parameter_file(nondup[i, ], nondup$old_parameter_file[i]))
+  dest <- file.path(out_dir, nondup$bundle[i],
+                    new_parameter_file(nondup[i, ], nondup$source_parameter_file[i]))
   dir.create(dirname(dest), recursive = TRUE, showWarnings = FALSE)
-  if (!file.exists(nondup$old_parameter_path[i])) {
-    stop("Missing source parameter diagnostics: ", nondup$old_parameter_path[i], call. = FALSE)
+  if (!file.exists(nondup$source_parameter_path[i])) {
+    stop("Missing source parameter diagnostics: ", nondup$source_parameter_path[i], call. = FALSE)
   }
-  file.copy(nondup$old_parameter_path[i], dest, overwrite = TRUE)
+  file.copy(nondup$source_parameter_path[i], dest, overwrite = TRUE)
 }
 
 dups <- ok[ok$duplicate_parameter_file, , drop = FALSE]
 write_csv(
-  dups[, c("bundle", "scenario", "dataset_seed", "n", "varsel", "iter", "warmup",
-           "row_id", "seed_id", "task_index", "chain_seeds", "old_parameter_file")],
+  dups[, intersect(c("bundle", "scenario", "dataset_seed", "n", "varsel", "iter", "warmup",
+                     "row_id", "seed_id", "task_index", "chain_seeds",
+                     "initial_value_seed", "initial_value_task_seed", "source_parameter_file"),
+                   names(dups))],
   file.path(out_dir, "duplicate_parameter_tasks.csv")
 )
 
 run_duplicate <- function(row) {
   chain_seeds <- as.integer(strsplit(row$chain_seeds, ";", fixed = TRUE)[[1]])
+  initial_value_seed <- if ("initial_value_seed" %in% names(row)) {
+    as.integer(row$initial_value_seed)
+  } else {
+    fixed_initial_value_seed()
+  }
   fit_row <- fit_task(
     scenario = row$scenario,
     dataset_seed = row$dataset_seed,
@@ -63,7 +87,8 @@ run_duplicate <- function(row) {
     varsel = row$varsel,
     chain_seeds = chain_seeds,
     parameter_dir = file.path(out_dir, row$bundle),
-    parameter_id = sprintf("task_%03d", row$task_index)
+    parameter_id = sprintf("task_%03d", row$task_index),
+    initial_value_seed = initial_value_seed
   )
   fit_row$bundle <- row$bundle
   fit_row$row_id <- row$row_id

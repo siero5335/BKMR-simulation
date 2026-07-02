@@ -4,11 +4,34 @@ root <- project_root(script_path)
 out_dir <- file.path(root, "results", "public_verification")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-run_existing_data <- function(dat, scenario, row_id, iter, warmup, varsel, chain_seeds) {
+run_existing_data <- function(dat, scenario, row_id, iter, warmup, varsel, chain_seeds,
+                              initial_value_seed = fixed_initial_value_seed()) {
+  initial_value_task_seed <- derive_initial_value_seed(
+    initial_value_seed,
+    scenario,
+    row_id,
+    length(dat$y),
+    ncol(dat$Z),
+    ncol(dat$X),
+    iter,
+    warmup,
+    varsel,
+    dat$label_sum,
+    paste(chain_seeds, collapse = ";")
+  )
   fit_obj <- NULL
   elapsed <- system.time({
     fit_obj <- tryCatch(
-      fit_chains(dat$y, dat$Z, dat$X, iter, warmup, varsel, chain_seeds),
+      fit_chains(
+        dat$y,
+        dat$Z,
+        dat$X,
+        iter,
+        warmup,
+        varsel,
+        chain_seeds,
+        initial_value_seed = initial_value_task_seed
+      ),
       error = identity
     )
   })[["elapsed"]]
@@ -29,6 +52,8 @@ run_existing_data <- function(dat, scenario, row_id, iter, warmup, varsel, chain
   row$warmup <- warmup
   row$varsel <- varsel
   row$chain_seeds <- paste(chain_seeds, collapse = ";")
+  row$initial_value_seed <- initial_value_seed
+  row$initial_value_task_seed <- initial_value_task_seed
   row$label_sum <- dat$label_sum
   row
 }
@@ -59,6 +84,7 @@ iter_main <- 10000L
 warmup_main <- 5000L
 iter_long <- 100000L
 warmup_long <- 50000L
+initial_value_seed <- fixed_initial_value_seed()
 
 dat40 <- make_bkmr_dataset(dataset_seed, 40L, 3L, 2)
 main_chain_seeds <- sample.int(.Machine$integer.max, 4L)
@@ -73,17 +99,20 @@ save_env_report(file.path(out_dir, "verification_env.txt"))
 main_rows <- list()
 main_rows[[length(main_rows) + 1L]] <- run_existing_data(
   dat40, "step1_main_exact_varsel_true", "step1_main",
-  iter_main, warmup_main, TRUE, main_chain_seeds
+  iter_main, warmup_main, TRUE, main_chain_seeds,
+  initial_value_seed = initial_value_seed
 )
 for (i in seq_len(ncol(seed_sets_3))) {
   main_rows[[length(main_rows) + 1L]] <- run_existing_data(
     dat40, sprintf("step3_seed_%d_exact_varsel_true", i), sprintf("step3_seed_%d", i),
-    iter_main, warmup_main, TRUE, seed_sets_3[, i]
+    iter_main, warmup_main, TRUE, seed_sets_3[, i],
+    initial_value_seed = initial_value_seed
   )
 }
 main_rows[[length(main_rows) + 1L]] <- run_existing_data(
   dat40, "step4_long_exact_varsel_false", "step4_long",
-  iter_long, warmup_long, FALSE, main_chain_seeds
+  iter_long, warmup_long, FALSE, main_chain_seeds,
+  initial_value_seed = initial_value_seed
 )
 main_verification <- do.call(rbind, main_rows)
 main_verification$dataset_seed <- dataset_seed
@@ -113,7 +142,8 @@ seed10_rows <- list()
 for (i in seq_len(ncol(seed_sets_10))) {
   seed10_rows[[length(seed10_rows) + 1L]] <- run_existing_data(
     dat40, "public_bkmr_seed10_varsel_true", sprintf("seed10_%02d", i),
-    iter_main, warmup_main, TRUE, seed_sets_10[, i]
+    iter_main, warmup_main, TRUE, seed_sets_10[, i],
+    initial_value_seed = initial_value_seed
   )
   seed10_rows[[length(seed10_rows)]]$seed_id <- i
 }
@@ -125,6 +155,7 @@ seed10_summary <- data.frame(
   model = "exact_public",
   dataset_seed = dataset_seed,
   seed_sweep_seed = 20260420L,
+  initial_value_seed = initial_value_seed,
   n_seed_sets = 10L,
   n_completed = sum(seed10_ok),
   crash_rate = mean(!seed10_ok),
@@ -148,12 +179,14 @@ for (seed in dataset_seeds(20260514L, 50L)) {
   dataset_sweep_rows[[length(dataset_sweep_rows) + 1L]] <- fit_task(
     "public_bkmr_dataset_sweep_n40_varsel_true", seed, 40L, 3L, 2,
     iter_main, warmup_main, TRUE, fixed_chain_seeds(),
-    parameter_dir = file.path(out_dir, "parameter_diagnostics")
+    parameter_dir = file.path(out_dir, "parameter_diagnostics"),
+    initial_value_seed = initial_value_seed
   )
   dataset_sweep_rows[[length(dataset_sweep_rows) + 1L]] <- fit_task(
     "public_bkmr_dataset_sweep_n80_varsel_false", seed, 80L, 3L, 2,
     iter_main, warmup_main, FALSE, fixed_chain_seeds(),
-    parameter_dir = file.path(out_dir, "parameter_diagnostics")
+    parameter_dir = file.path(out_dir, "parameter_diagnostics"),
+    initial_value_seed = initial_value_seed
   )
 }
 dataset_sweep <- do.call(rbind, dataset_sweep_rows)
@@ -165,14 +198,16 @@ write_csv(dataset_summary, file.path(out_dir, "dataset_sweep_summary.csv"))
 n_sweep_rows <- lapply(c(40L, 80L, 160L, 320L), function(n) {
   fit_task("public_bkmr_n_sweep_varsel_false", dataset_seed, n, 3L, 2,
            iter_main, warmup_main, FALSE, fixed_chain_seeds(),
-           parameter_dir = file.path(out_dir, "parameter_diagnostics"))
+           parameter_dir = file.path(out_dir, "parameter_diagnostics"),
+           initial_value_seed = initial_value_seed)
 })
 n_sweep <- do.call(rbind, n_sweep_rows)
 write_csv(n_sweep, file.path(out_dir, "n_sweep_summary.csv"))
 
 long_rows <- lapply(c(50000L, 100000L), function(iter) {
   run_existing_data(dat40, "public_bkmr_longrun_varsel_false",
-                    sprintf("long_%d", iter), iter, iter / 2L, FALSE, fixed_chain_seeds())
+                    sprintf("long_%d", iter), iter, iter / 2L, FALSE, fixed_chain_seeds(),
+                    initial_value_seed = initial_value_seed)
 })
 write_csv(do.call(rbind, long_rows), file.path(out_dir, "longrun_50k_100k_summary.csv"))
 
@@ -181,7 +216,8 @@ for (i in seq_len(ncol(seed_sets_3))) {
   for (iter in c(50000L, 100000L)) {
     long3_rows[[length(long3_rows) + 1L]] <- run_existing_data(
       dat40, "public_bkmr_longrun_seed3_varsel_false",
-      sprintf("seed_%d_iter_%d", i, iter), iter, iter / 2L, FALSE, seed_sets_3[, i]
+      sprintf("seed_%d_iter_%d", i, iter), iter, iter / 2L, FALSE, seed_sets_3[, i],
+      initial_value_seed = initial_value_seed
     )
     long3_rows[[length(long3_rows)]]$seed_id <- i
   }
