@@ -1,0 +1,68 @@
+[1] "2026-09-11 13:20:55 JST"
+R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin20
+Running under: macOS Tahoe 26.3
+
+Matrix products: default
+BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: Asia/Tokyo
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+ [1] tensorA_0.36.2.1     backports_1.5.1      Matrix_1.7-6        
+ [4] lattice_0.22-9       magrittr_2.0.5       posterior_1.7.0     
+ [7] glue_1.8.1           zoo_1.8-15           abind_1.4-8         
+[10] tibble_3.3.1         gmm_1.9-1            pkgconfig_2.0.3     
+[13] generics_0.1.4       tmvtnorm_1.7         lifecycle_1.0.5     
+[16] stats4_4.5.2         cli_3.6.6            mvtnorm_1.4-2       
+[19] bkmr_0.2.2.9000      vctrs_0.7.3          grid_4.5.2          
+[22] sandwich_3.1-2       compiler_4.5.2       distributional_0.8.1
+[25] checkmate_2.3.4      nlme_3.1-170         pillar_1.11.1       
+[28] rlang_1.3.0         
+[1] "Mersenne-Twister" "Inversion"        "Rejection"       
+$Package
+[1] "bkmr"
+
+$Version
+[1] "0.2.2.9000"
+
+$RemoteSha
+[1] "45413e338a316362d629f53bd2a917c4bf485c1e"
+
+$Built
+[1] "R 4.5.2; ; 2026-04-20 08:50:54 UTC; unix"
+
+$Package
+[1] "posterior"
+
+$Version
+[1] "1.7.0"
+
+$RemoteSha
+[1] "1.7.0"
+
+$Built
+[1] "R 4.5.2; ; 2026-04-01 17:18:39 UTC; unix"
+
+$Package
+[1] "tmvtnorm"
+
+$Version
+[1] "1.7"
+
+$RemoteSha
+[1] "1.7"
+
+$Built
+[1] "R 4.5.0; aarch64-apple-darwin20; 2025-09-03 22:07:40 UTC; unix"
+
+       OMP_NUM_THREADS   OPENBLAS_NUM_THREADS VECLIB_MAXIMUM_THREADS 
+                    ""                     ""                     "" 

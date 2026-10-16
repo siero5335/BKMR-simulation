@@ -1,0 +1,2 @@
+# Preserve distributed file bytes and SHA-256 hashes across checkouts.
+* -text

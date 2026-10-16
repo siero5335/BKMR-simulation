@@ -1,0 +1,32 @@
+{
+  "created_at": "2026-09-14T08:39:36.476499+00:00",
+  "purpose": "Coauthor proposals: sensitivity of inferential summaries to initialization and improvement with longer chains.",
+  "scope": "12 deliberately selected completed FALSE cases: three per n=40/80/160/320; varsel FALSE; same model, data, priors and proposals.",
+  "selection": "Previous first-task anchor; lowest task id passing original six-parameter criterion (at n40 no pass exists, use middle-ranked beta Rhat among remaining cases); highest beta Rhat among remaining non-pass cases. Based on existing diagnostics, not beta error or extension outcomes. Illustrative, not population-representative.",
+  "initializations": [
+    "original four starts",
+    "new four randomized starts with seed 16000000+task_id",
+    "new four randomized starts with seed 17000000+task_id"
+  ],
+  "initialization_distribution": "Same original starting-value generator and ranges for all three sets. Only initial states differ; same four original sampler seeds used across initialization sets.",
+  "iterations": 100000,
+  "budgets": [
+    10000,
+    20000,
+    40000,
+    100000
+  ],
+  "chains_per_set": 4,
+  "initialization_sets": 3,
+  "chain_jobs": 144,
+  "workers": 8,
+  "warmup_primary": 5000,
+  "warmup_sensitivity": "Discard first half at each budget (10k coincides with primary); additional analysis using the same trajectories.",
+  "targets": "beta mean, SD, 95% interval, error relative to true beta=0.5, interval containing truth/zero, P(beta>0), MCSE; original six-parameter Rhat/bulk/tail ESS; chain-specific beta summaries.",
+  "h_scope": "No new h postprocessing in this experiment; existing all-observed-point h analysis remains a separate supplementary result.",
+  "comparisons": "Within each dataset, compare initialization sets at a fixed budget and nested prefixes within a fixed initialization set. Same sampler seeds across sets induce dependence; do not pool sets as independent chains or use independent-SE tests. No causal effect of diagnostic classification or population failure-rate estimate.",
+  "failure_handling": "Run all four independent chains. Record sampler errors and retain only fully completed iterations before the failing update when recoverable. Evaluate a budget only if all four chains completed it. Later numerical failures remain recorded even when shorter prefixes are evaluable. Technical validation failures halt further dispatch.",
+  "verification": "Original initialization: retained iterations 5001:10000 exactly match previous FALSE six-parameter draws chain by chain; versions/starts/data/RNG fixed. Scripts and selection frozen before extension outcomes.",
+  "retention": "Retain all six-parameter trajectories for all 144 chains (including initial/warmup iterations) plus statuses, seeds, diagnostics and chain summaries. Do not discard these raw draws; lightweight deliverables contain a bounded subset, with full raw trajectories local.",
+  "interpretation": "Long-run failure is evidence of unresolved computation under the tested budgets and may be consistent with weak identification; it is not by itself a proof of insufficient data information."
+}

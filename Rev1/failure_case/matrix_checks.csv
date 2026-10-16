@@ -1,0 +1,4 @@
+"matrix","provenance","dimension","nonfinite","max_asymmetry","symmetrized_min_eigenvalue","symmetrized_max_eigenvalue","cholesky_success","determinant","determinant_sign","log_abs_determinant"
+"H","actual rtmvnorm argument from failing call",320,0,0,0.0125988808329156,0.823226899770526,TRUE,0,1,-746.365196117175
+"K","reconstructed from recorded r and Z after failure",320,0,0,0.0171933008078577,6.27515247517819,TRUE,1.08357819370212e-49,1,-112.746400849619
+"V","reconstructed I + lambda K after failure",320,0,0,1.21473192904504,79.372129418622,TRUE,Inf,1,746.365196117175

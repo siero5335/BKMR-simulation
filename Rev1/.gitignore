@@ -1,0 +1,13 @@
+# Generated rerun artifacts: distribute summaries/code, never local trajectories.
+_work/
+*.rds
+*.RDS
+*.RData
+*.Rdata
+.Rhistory
+.Rapp.history
+.Rproj.user/
+__pycache__/
+*.pyc
+.DS_Store
+*.log

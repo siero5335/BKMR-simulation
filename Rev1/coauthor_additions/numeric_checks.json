@@ -1,0 +1,80 @@
+{
+  "chain_range_TRUE": {
+    "n": 52,
+    "median": 0.059391907905492064,
+    "max": 0.24978128100542177
+  },
+  "chain_range_FALSE": {
+    "n": 92,
+    "median": 0.2764909531716221,
+    "max": 1.5952207838221208
+  },
+  "references": {
+    "n": 54,
+    "datasets": 8
+  },
+  "reference_TRUE": {
+    "n": 22,
+    "beta_mean": {
+      "median": 0.014154843851409356,
+      "max": 0.0718818654014417
+    },
+    "beta_q975": {
+      "median": 0.04486155541580862,
+      "max": 0.14577674758568293
+    }
+  },
+  "reference_FALSE": {
+    "n": 32,
+    "beta_mean": {
+      "median": 0.031048164120273843,
+      "max": 0.1582494888515634
+    },
+    "beta_q975": {
+      "median": 0.11441408384688342,
+      "max": 0.557094064581405
+    }
+  },
+  "endpoint_primary non-pass": {
+    "n": 127,
+    "above": 30
+  },
+  "endpoint_primary pass": {
+    "n": 22,
+    "above": 0
+  },
+  "different_seeds": {
+    "count": 21,
+    "groups": [
+      "public_longrun_seed3",
+      "public_main",
+      "public_seed10"
+    ]
+  },
+  "matched": {
+    "balanced_main_40": {
+      "count": 50,
+      "max_rhat": 1.0427086445687102,
+      "min_bulk_ess": 116.4220531322845,
+      "event_rate": 0.725
+    },
+    "balanced_main_80": {
+      "count": 50,
+      "max_rhat": 1.03451457329741,
+      "min_bulk_ess": 126.7208781807485,
+      "event_rate": 0.7125
+    },
+    "default_support_40": {
+      "count": 20,
+      "max_rhat": 1.669827373532745,
+      "min_bulk_ess": 6.489740945194351,
+      "event_rate": 0.875
+    },
+    "default_support_80": {
+      "count": 20,
+      "max_rhat": 1.360740189437955,
+      "min_bulk_ess": 9.675544229861964,
+      "event_rate": 0.85625
+    }
+  }
+}

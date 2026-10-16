@@ -1,0 +1,13 @@
+task_index,n,selection_role,baseline_beta_rhat,baseline_primary_pass
+201,40,previous_anchor,1.16835136191167,False
+212,40,middle_rank_beta_rhat_nonpass_no_pass_exists,1.03000443917223,False
+243,40,highest_remaining_beta_rhat_nonpass,1.35125968293573,False
+51,80,previous_anchor,1.00242744638423,False
+90,80,lowest_id_primary_pass,1.00717516711415,True
+70,80,highest_remaining_beta_rhat_nonpass,1.51361804195606,False
+101,160,previous_anchor,1.0030752659737,False
+110,160,lowest_id_primary_pass,1.00158591351318,True
+142,160,highest_remaining_beta_rhat_nonpass,1.35487195190386,False
+151,320,previous_anchor,1.01169533025141,False
+159,320,lowest_id_primary_pass,1.00295741126394,True
+181,320,highest_remaining_beta_rhat_nonpass,1.06397935857975,False
